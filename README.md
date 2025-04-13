@@ -216,3 +216,99 @@ sudo mysql_secure_installation
 - มีระบบ rollback, health check หรือ monitoring
 
 ---
+
+## คำตอบข้อ 5
+
+### 1. การเตรียมความพร้อมใช้งาน AWS Cloud
+
+#### ขั้นตอนเบื้องต้น
+1. **สมัครบัญชี AWS** ที่ https://aws.amazon.com/
+2. **ติดตั้ง AWS CLI**
+   - ดาวน์โหลดตาม OS: https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html
+   - ตั้งค่าด้วยคำสั่ง:
+     ```bash
+     aws configure
+     ```
+     จากนั้นใส่ AWS Access Key, Secret Key, Region, และ Output format
+
+3. **ตั้งค่า IAM**
+   - สร้าง IAM User/Role พร้อมสิทธิ์ (Policy) เช่น `AmazonEC2FullAccess`, `AmazonEKSClusterPolicy`, `AmazonECS_FullAccess`
+   - ใช้หลัก “Least Privilege” เพื่อความปลอดภัยสูงสุด
+
+---
+
+### 2. การใช้งาน Amazon EC2 (Elastic Compute Cloud)
+
+#### วิธีติดตั้ง EC2
+1. เข้าหน้า AWS Console > EC2 > Launch Instance
+2. เลือก Amazon Machine Image (AMI) เช่น Ubuntu หรือ Amazon Linux
+3. เลือก Instance Type เช่น t2.micro (Free Tier)
+4. สร้าง Key Pair สำหรับ SSH
+5. สร้าง Security Group เปิดพอร์ตที่ต้องการ (22, 80, 443)
+6. Launch Instance
+
+#### SSH เข้าสู่ EC2
+```bash
+ssh -i "your-key.pem" ec2-user@<your-ec2-public-ip>
+```
+
+### 3. การใช้งาน Amazon ECS (Elastic Container Service)
+
+ECS เป็นบริการสำหรับรัน Docker container บน AWS โดยไม่ต้องติดตั้ง Kubernetes โดยสามารถเลือกใช้งานได้ 2 แบบ:
+
+EC2 Launch Type: ใช้ EC2 เป็นโฮสต์ให้ container
+
+Fargate Launch Type: Serverless – ไม่ต้องจัดการ VM
+
+#### การติดตั้ง ECS (Fargate)
+1. สร้าง Task Definition (กำหนด image, CPU, memory ฯลฯ)
+2. สร้าง ECS Cluster
+3. สร้าง ECS Service เพื่อรัน task
+4. เชื่อมต่อกับ Load Balancer เพื่อเปิดให้เข้าจากภายนอก
+
+### 4. การใช้งาน Amazon EKS (Elastic Kubernetes Service)
+
+EKS คือบริการ Kubernetes ที่ AWS ช่วยจัดการ Control Plane ให้ ส่วน Node (Worker) เราจัดการเองหรือตั้งเป็น Fargate ได้
+
+#### ขั้นตอนติดตั้ง EKS
+
+##### ติดตั้ง eksctl:
+```bash
+brew tap weaveworks/tap
+brew install weaveworks/tap/eksctl
+```
+
+##### สร้าง Cluster:
+```bash
+eksctl create cluster \
+  --name my-cluster \
+  --region ap-southeast-1 \
+  --nodes 2 \
+  --node-type t3.medium
+```
+
+##### ตั้งค่า kubectl ให้เชื่อมต่อกับ EKS:
+```bash
+aws eks --region ap-southeast-1 update-kubeconfig --name my-cluster
+kubectl get nodes
+```
+
+### 5. เปรียบเทียบ ECS vs EKS
+
+| รายการเปรียบเทียบ | ECS | EKS |
+|------------|-------------|-------------|
+| ระบบจัดการ | AWS Native | Kubernetes (มาตรฐานสากล) |
+| การดูแล | ง่าย | ต้องศึกษา Kubernetes |
+| การปรับขยาย (Scaling) | มี Auto Scaling | มี Horizontal & Cluster Autoscaler |
+| ความยืดหยุ่นในการปรับแต่ง | ปานกลาง | สูงมาก สามารถใช้ Helm, CRD ได้ |
+| ความซับซ้อน | ต่ำ | สูงกว่าพอสมควร |
+| ความเหมาะกับ | ทีมเล็ก/โปรเจกต์ขนาดกลาง | ทีมใหญ่, Microservices, Multi-cloud |
+
+### 6. แนวทางการเลือกใช้งาน
+
+| สถานการณ์ | ควรใช้ |
+|------------|-------------|
+| ต้องการ VM ปกติ (Web, DB) | EC2 |
+| ต้องการรัน container แบบง่าย, จัดการผ่าน AWS Console | ECS |
+| ต้องการจัดการ workload แบบ Microservices / ใช้ Kubernetes เดิม | EKS |
+| ต้องการ Serverless container ที่ไม่ยุ่งกับ VM เลย | ECS Fargate หรือ EKS Fargate |
