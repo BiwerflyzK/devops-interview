@@ -156,4 +156,63 @@ sudo mysql_secure_installation
 - ตรวจสอบ Log และทรัพยากรระบบ (Resource Usage)
 - ยืนยันว่า Server พร้อมใช้งานจริงตามวัตถุประสงค์
 
+## คำตอบข้อ 4
+
+### ส่วนประกอบพื้นฐานของ CI/CD
+
+| องค์ประกอบ | รายละเอียด |
+|------------|-------------|
+| **Source Code Repository** | เช่น GitHub, GitLab, Bitbucket |
+| **CI/CD Tools** | เช่น Jenkins, GitLab CI/CD, GitHub Actions, CircleCI |
+| **Artifact Repository** | เช่น Docker Hub, JFrog Artifactory, Nexus |
+| **Target Environment** | เช่น Dev, UAT, Production (VM, Container, Cloud) |
+
+---
+
+### Continuous Integration (CI)
+
+> รวมโค้ดและทดสอบอัตโนมัติทุกครั้งที่มีการเปลี่ยนแปลงโค้ดใน repository
+
+#### ขั้นตอน:
+1. **Developer พัฒนาโค้ด** บนเครื่อง local และ `git push` ขึ้น remote
+2. **Trigger CI Pipeline** อัตโนมัติจาก Git event (push, merge)
+3. **Checkout Source Code** จาก branch ที่เกี่ยวข้อง
+4. **Build Project** (ติดตั้ง dependencies, compile)
+5. **Run Automated Tests**
+   - Unit Tests
+   - Integration Tests
+   - Static Code Analysis (เช่น SonarQube)
+6. **Generate Artifacts**
+   - เช่น JAR/WAR, Docker Image, Zip File
+7. **Upload Artifacts** ไปยัง Artifact Repository
+   - เพื่อใช้ในขั้นตอน Deploy ต่อไป
+
+---
+
+### Continuous Delivery (CD)
+
+> ทำให้ซอฟต์แวร์พร้อม deploy ได้ทุกเมื่อ โดยอัตโนมัติหลัง CI เสร็จ
+
+#### ขั้นตอน:
+1. **Trigger CD Pipeline** ต่อจาก CI เมื่อ build สำเร็จ
+2. **เลือก Environment** ที่จะ deploy เช่น Dev, UAT
+3. **Deploy Artifacts** ไปยังเซิร์ฟเวอร์หรือ container
+4. **Post-Deployment Tasks**
+   - Migrate database
+   - Clear cache หรือ warm-up
+5. **Notification**
+   - ส่งแจ้งเตือนผ่าน Email, Slack, Discord เป็นต้น
+
+> ต้องมีขั้นตอน Approval ก่อน deploy ไป Production
+
+---
+
+### Continuous Deployment (CD แบบเต็ม)
+
+> Deploy โค้ดไป Production อัตโนมัติ **โดยไม่ต้องรอการอนุมัติ** (เมื่อผ่าน test ครบถ้วน)
+
+#### เหมาะสำหรับ:
+- ระบบที่มี automated tests ครบถ้วน
+- มีระบบ rollback, health check หรือ monitoring
+
 ---
