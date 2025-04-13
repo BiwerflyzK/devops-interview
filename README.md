@@ -45,6 +45,8 @@ sudo nano /etc/netplan/00-installer-config.yaml
 sudo netplan apply
 ```
 
+---
+
 ### 4. ติดตั้ง Environment
 
 #### อัปเดตระบบ:
@@ -70,3 +72,88 @@ sudo systemctl enable nginx
 sudo apt install mysql-server -y
 sudo mysql_secure_installation
 ```
+
+## คำตอบข้อ 2
+
+### 1. วางแผนและเตรียมการก่อนติดตั้ง (Pre-Setup)
+
+- กำหนดวัตถุประสงค์การใช้งาน Server (Web Server, Database Server, File Server)
+- เลือก Hardware ที่เหมาะสม (CPU, RAM, Storage, Network Interface)
+- เตรียม Software ที่จำเป็น (ระบบปฏิบัติการ)
+
+---
+
+### 2. การ Set-up Hardware
+
+- ประกอบหรือติดตั้ง Server บน Rack
+- เชื่อมต่อสายไฟ, สาย LAN และอุปกรณ์ต่อพ่วง
+- ตรวจสอบ POST และอัปเดต BIOS/UEFI Firmware
+
+---
+
+### 3. ติดตั้งระบบปฏิบัติการ (Operating System Installation)
+
+- Boot จาก USB เพื่อติดตั้ง OS
+- แบ่งพาร์ติชันและเลือก File System (เช่น EXT4, NTFS)
+- กำหนดค่า Hostname, Region, Timezone
+- ตั้งค่า User/Password สำหรับผู้ดูแลระบบ
+
+---
+
+### 4. ตั้งค่าระบบ Network
+
+- กำหนด IP Address แบบ Static
+- ตั้งค่า Gateway และ DNS
+- ทดสอบการเชื่อมต่ออินเทอร์เน็ตหรือระบบเครือข่ายภายใน
+
+---
+
+### 5. ตั้งค่าความปลอดภัยเบื้องต้น
+
+- เปิด/ปิด Firewall ตามความจำเป็น
+- ปิด SSH root login (สำหรับ Linux)
+- เปลี่ยนพอร์ต SSH (ถ้าต้องการเพิ่มความปลอดภัย)
+- สร้าง Users และกำหนดสิทธิ์ (Permissions)
+
+---
+
+### 6. ติดตั้ง Service/Application ที่ต้องใช้งาน
+
+- ติดตั้ง Web Server เช่น Nginx
+- ติดตั้งระบบฐานข้อมูล เช่น MySQL, PostgreSQL, MSSQL
+- ติดตั้งบริการแชร์ไฟล์ เช่น NFS
+- ติดตั้ง Application ตามความต้องการของระบบ
+
+---
+
+### 7. ติดตั้งและตั้งค่า Monitoring และ Logging
+
+- ติดตั้งระบบ Monitoring เช่น Prometheus, Grafana
+- ตั้งค่าระบบ Logging เช่น ELK Stack
+- ตั้งค่าการแจ้งเตือนผ่าน Email, Discord, Line Notify
+
+---
+
+### 8. ตั้งค่า Backup และ Recovery
+
+- วางแผนการ Backup: รายวัน/รายสัปดาห์
+- ติดตั้งและตั้งค่าโปรแกรม Backup เช่น Veeam, rsync, Bacula
+- ทดสอบการ Restore เพื่อยืนยันความถูกต้อง
+
+---
+
+### 9. จัดทำเอกสารและ SOP (Standard Operating Procedures)
+
+- บันทึกข้อมูลสำคัญ เช่น IP Address, User, Password, Config ต่าง ๆ
+- เขียนคู่มือการดูแลและการอัปเดตระบบ
+- สรุปรายชื่อผู้ดูแลระบบและช่องทางติดต่อกรณีฉุกเฉิน
+
+---
+
+### 10. ทดสอบการใช้งานจริง (Go-Live Test)
+
+- ทดสอบการเข้าถึง Service จาก Client ภายนอก/ภายใน
+- ตรวจสอบ Log และทรัพยากรระบบ (Resource Usage)
+- ยืนยันว่า Server พร้อมใช้งานจริงตามวัตถุประสงค์
+
+---
